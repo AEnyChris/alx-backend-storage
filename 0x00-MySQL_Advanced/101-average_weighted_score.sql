@@ -23,7 +23,7 @@ BEGIN
 		);
 
 		UPDATE users
-		SET users.average_score = users.score_by_weight / users.weight_sum;
+		SET users.average_score = IF(users.weight_sum = 0, 0, users.score_by_weight / users.weight_sum);
 
 		ALTER TABLE users DROP column score_by_weight;
 		ALTER TABLE users DROP column weight_sum;
