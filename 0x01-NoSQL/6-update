@@ -1,6 +1,6 @@
-// update collection with give property
+// Adds a new attribute to documents in the school collection.
 db.school.update(
-	{name: "Holberton school"},
-	{"$set": {address: “972 Mission street”}},
-	{multi: true}
-)
+    {name: "Holberton school"},
+    {"$set": {address: "972 Mission street"}},
+    {multi: true}
+);
