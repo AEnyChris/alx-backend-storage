@@ -3,5 +3,6 @@
 
 
 def list_all(mongo_collection):
+    """list all docs in mongo_collection"""
     for doc in mongo_collection.find():
         yield doc
