@@ -1,8 +1,20 @@
 #!/usr/bin/env python3
 """Define class Cache for data storage"""
 from uuid import uuid4
+from functools import wraps
 import redis
-from typing import Union, Callable
+from typing import Union, Callable, Any
+
+
+def count_calls(method: Callable) -> Callable:
+    """counts how many times a method of Cache class is called"""
+    @wraps(method)
+    def trigger(self, *args, **kwargs) -> Any:
+        """invokes the given method after increment of counter"""
+        if isinstance(self._redis, redis.Redis):
+            self._redis.incr(method.__qualname__)
+        return method(self, *args, **kwargs)
+    return trigger
 
 
 class Cache:
@@ -14,6 +26,7 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb(True)
 
+    @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """
         Stores a value `data` in a Redis data
