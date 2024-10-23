@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
-"""Defines the class Cache"""
-from uuid import uuid4
-from typing import Union
+"""Define class Cache for data storage"""
+import uuid
 import redis
+from typing import Union
 
 
 class Cache:
-    """The Cache class for storing data to redis"""
+    '''Represents an object for storing data in a Redis data storage.
+    '''
     def __init__(self) -> None:
-        """initializes a Cache instance"""
+        '''Initializes a Cache instance.
+        '''
         self._redis = redis.Redis()
-        self._redis.flushdb()
+        self._redis.flushdb(True)
 
-    def store(self, data: Union[str, int, float, bytes]) -> str:
-        """
-        stores data into redis with a random key (uuid4)
-        and returns the key
-        """
-        key = str(uuid4())
-        self._redis.set(key, data)
-        return key
+    def store(self, data: Union[str, bytes, int, float]) -> str:
+        '''Stores a value in a Redis data storage and returns the key.
+        '''
+        data_key = str(uuid.uuid4())
+        self._redis.set(data_key, data)
+        return data_key
