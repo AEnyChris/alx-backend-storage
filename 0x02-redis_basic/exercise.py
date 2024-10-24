@@ -17,6 +17,26 @@ def count_calls(method: Callable) -> Callable:
     return trigger
 
 
+def call_history(method: Callable) -> Callable:
+    """stores the history of inputs and output for a function"""
+    @wraps(method)
+    def trigger(self, *args, **kwargs) -> Any:
+        """
+        adds the input and output of method
+        to a list and returns the output
+        """
+        input_key = f'{method.__qualname__}:inputs'
+        output_key = f'{method.__qualname__}:outputs'
+
+        if isinstance(self._redis, redis.Redis):
+            self._redis.rpush(input_key, str(args))
+        output = method(self, *args, **kwargs)
+        if isinstance(self._redis, redis.Redis):
+            self._redis.rpush(output_key, output)
+        return output
+    return trigger
+
+
 class Cache:
     """the class Cache for storing
     data in a Redis data storage.
@@ -26,6 +46,7 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb(True)
 
+    @call_history
     @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """
