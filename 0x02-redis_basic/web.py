@@ -7,7 +7,8 @@ from functools import wraps
 from typing import Callable
 
 
-redis = redis.Redis()
+redis_store = redis.Redis()
+
 
 def data_cacher(method: Callable) -> Callable:
     '''Caches the output of fetched data.
@@ -25,6 +26,8 @@ def data_cacher(method: Callable) -> Callable:
         redis_store.setex(f'result:{url}', 10, result)
         return result
     return invoker
+
+
 '''
 def url_tracker(method: Callable) -> Callable:
     """
@@ -33,8 +36,8 @@ def url_tracker(method: Callable) -> Callable:
     """
     @wraps(method)
     def trigger(url) -> str:
-        '''The wrapper function.
-        '''
+        """The wrapper function.
+        """
         redis.incr(f'count:{url}')
         response = redis.get(f'response:{url}')
         if response:
@@ -45,6 +48,7 @@ def url_tracker(method: Callable) -> Callable:
         return response
     return trigger
 '''
+
 
 @data_cacher
 def get_page(url: str) -> str:
